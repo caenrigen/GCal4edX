@@ -1,5 +1,10 @@
 #! /usr/local/bin/python3
 
+# Usefull documentaion:
+# https://developers.google.com/resources/api-libraries/documentation/calendar/v3/python/latest/index.html
+# https://developers.google.com/calendar/v3/reference/
+# https://docs.python.org/3/library/xml.etree.elementtree.html#module-xml.etree.ElementTree
+
 import pickle
 from datetime import datetime, timedelta
 from googleapiclient.discovery import build
