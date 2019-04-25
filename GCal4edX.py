@@ -146,7 +146,7 @@ def main():
 
 	print('    Creating events...')
 	for event in events:
-		service.events().insert(calendarId=created_calendar['id'],body=event).execute()
+		service.events().insert(calendarId=created_calendar['id'], body=event).execute()
 
 	print('    Calendar Name: '+ created_calendar['summary'])
 	print('    Calendar ID: '+created_calendar['id'])
@@ -154,7 +154,7 @@ def main():
 	publicLinkPrefix='https://calendar.google.com/calendar/ical/'
 	publicLinkSufix='/public/basic.ics'
 	publicLink = publicLinkPrefix + urllib.parse.quote_plus(created_calendar['id']) + publicLinkSufix
-	print('    Calendar Public Link: '+publicLink)
+	print('    Calendar Public Link: ' + publicLink)
 	print('    [NOTE: You must set the calendar to public!]')
 	print('    NB: Subscribe to the calendar yourself!')
 
