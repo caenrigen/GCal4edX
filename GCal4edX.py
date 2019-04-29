@@ -124,10 +124,15 @@ def main():
 	for file in os.listdir('./'):
 		if file.endswith('.xml'):
 			attrib = ET.parse(file).getroot().attrib
-			start = attrib.get('start').strip('\"')
-			title = titlePrefix + attrib.get('display_name').strip('\"')
-			events.append(buildEvent(title, start, addHours(start,1)))
-			events.append(buildAllDayEvent(title, start, start))
+			start = attrib.get('start')
+			title = attrib.get('display_name')
+			if start:
+				start = start.strip('\"')
+				title = titlePrefix + title.strip('\"')
+				events.append(buildEvent(title, start, addHours(start,1)))
+				events.append(buildAllDayEvent(title, start, start))
+			else:
+				print('    [Warning:] No start date found for chapter: '+ title + 'in file: ' + file + '.\n    You might need to change the date in Studio to a diffent one and back again.')
 
 	titlePrefix = 'Deadline: '
 	os.chdir('../'+sequentialDir)	
