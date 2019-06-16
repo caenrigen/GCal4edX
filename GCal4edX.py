@@ -39,11 +39,12 @@ def main():
 	service = build('calendar', 'v3', credentials=creds)
 
 	if len(sys.argv) < 3:
-		print('Usage: GCal4edX <tar file path> <course run>')
+		print('Usage: GCal4edX <tar file path> <course run> <lang: \'pt\' or \'en\'>')
 		return
 	# get user input
-	courseRun = sys.argv[-1]
-	file = sys.argv[-2]
+	lang = sys.argv[-1]
+	courseRun = sys.argv[-2]
+	file = sys.argv[-3]
 
 	absPath= os.path.abspath(file) 
 
@@ -119,7 +120,7 @@ def main():
 		event = buildAllDayEvent(globalEvent[0], globalEvent[1], globalEvent[1])
 		events.append(event)
 
-	titlePrefix = 'New Content: '
+	titlePrefix = {'en':'New Content: ','pt': 'Novos Conteúdos: '}
 	os.chdir(chapterDir)
 	for file in os.listdir('./'):
 		if file.endswith('.xml'):
@@ -128,13 +129,13 @@ def main():
 			title = attrib.get('display_name')
 			if start:
 				start = start.strip('\"')
-				title = titlePrefix + title.strip('\"')
+				title = titlePrefix[lang] + title.strip('\"')
 				events.append(buildEvent(title, start, addHours(start,1)))
 				events.append(buildAllDayEvent(title, start, start))
 			else:
 				print('    [Warning:] No start date found for chapter: '+ title + 'in file: ' + file + '.\n    You might need to change the date in Studio to a diffent one and back again.')
 
-	titlePrefix = 'Deadline: '
+	titlePrefix = {'en': 'Deadline: ', 'pt': 'Fim de prazo: '}
 	os.chdir('../'+sequentialDir)	
 	for file in os.listdir('./'):
 		if file.endswith('.xml'):
@@ -142,7 +143,7 @@ def main():
 			due = attrib.get('due')
 			if due:
 				due = due.strip('\"')
-				title = titlePrefix + attrib.get('display_name').strip('\"')
+				title = titlePrefix[lang] + attrib.get('display_name').strip('\"')
 				events.append(buildEvent(title, addHours(due,-6), due))
 				events.append(buildAllDayEvent(title, due, due))
 
