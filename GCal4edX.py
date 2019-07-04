@@ -65,6 +65,7 @@ def main():
 	courseFile = './course/course.xml'
 	chapterDir = './chapter/'
 	sequentialDir = './sequential/'
+	verticalDir = './vertical/'
 
 	os.chdir(courseDir)
 
@@ -120,7 +121,8 @@ def main():
 		event = buildAllDayEvent(globalEvent[0], globalEvent[1], globalEvent[1])
 		events.append(event)
 
-	titlePrefix = {'en':'New Content: ','pt': 'Novos Conteúdos: '}
+	# New contents
+	titlePrefix = {'en':'New Content','pt': 'Novos Conteúdos'}
 	os.chdir(chapterDir)
 	for file in os.listdir('./'):
 		if file.endswith('.xml'):
@@ -129,13 +131,14 @@ def main():
 			title = attrib.get('display_name')
 			if start:
 				start = start.strip('\"')
-				title = titlePrefix[lang] + title.strip('\"')
+				title = titlePrefix[lang] + ': ' + title.strip('\"')
 				events.append(buildEvent(title, start, addHours(start,1)))
 				events.append(buildAllDayEvent(title, start, start))
 			else:
 				print('    [Warning:] No start date found for chapter: '+ title + 'in file: ' + file + '.\n    You might need to change the date in Studio to a diffent one and back again.')
 
-	titlePrefix = {'en': 'Deadline: ', 'pt': 'Fim de prazo: '}
+	# Deadlines for subsections
+	titlePrefix = {'en': 'Deadline', 'pt': 'Fim de prazo'}
 	os.chdir('../'+sequentialDir)	
 	for file in os.listdir('./'):
 		if file.endswith('.xml'):
@@ -143,9 +146,50 @@ def main():
 			due = attrib.get('due')
 			if due:
 				due = due.strip('\"')
-				title = titlePrefix[lang] + attrib.get('display_name').strip('\"')
+				title = titlePrefix[lang] + ': ' + attrib.get('display_name').strip('\"')
 				events.append(buildEvent(title, addHours(due,-6), due))
 				events.append(buildAllDayEvent(title, due, due))
+
+	# Peer Review
+	titlePrefixSubStart = {'en': 'Response submission opened', 'pt': 'Início submissão de respostas'}
+	titlePrefixSubDue   = {'en': 'Response submission deadline', 'pt': 'Fim de prazo submissão de respostas'}
+	titlePrefixPAstart  = {'en': 'Peer assessment start', 'pt': 'Início avaliação dos pares'}
+	titlePrefixPAdue    = {'en': 'Peer assessment deadline', 'pt': 'Fim de prazo avaliação dos pares'}
+	os.chdir('../'+verticalDir)
+	for file in os.listdir('./'):
+		if file.endswith('.xml'):
+			root = ET.parse(file).getroot()
+			for PR in root.iter('openassessment'):
+				PRtitle = PR.find('title').text
+				print(title)
+				attrib = PR.attrib
+				sub_start = attrib.get('submission_start')
+				sub_due = attrib.get('submission_due')
+				if sub_start:
+					sub_start = sub_start.strip('\"')
+					title = titlePrefixSubStart[lang] + ': ' + PRtitle
+					events.append(buildEvent(title, sub_start, addHours(sub_start,1)))
+					events.append(buildAllDayEvent(title, sub_start, sub_start))
+				if sub_due:
+					sub_due = sub_due.strip('\"')
+					title = titlePrefixSubDue[lang] + ': ' + PRtitle
+					events.append(buildEvent(title, addHours(sub_due,-6), sub_due))
+					events.append(buildAllDayEvent(title, sub_due, sub_due))
+				for assessments in PR.findall('assessments'):
+					for assessment in assessments.findall('assessment'):
+						PAattrib = assessment.attrib
+						PAstart = PAattrib.get('start')
+						PAdue = PAattrib.get('due')
+						if PAstart:
+							PAstart = PAstart.strip('\"')
+							title = titlePrefixPAstart[lang] + ': ' + PRtitle
+							events.append(buildEvent(title, PAstart, addHours(PAstart,1)))
+							events.append(buildAllDayEvent(title, PAstart, PAstart))
+						if PAdue:
+							PAdue = PAdue.strip('\"')
+							title = titlePrefixPAdue[lang] + ': ' + PRtitle
+							events.append(buildEvent(title, addHours(PAdue,-6), PAdue))
+							events.append(buildAllDayEvent(title, PAdue, PAdue))
 
 	print('    Found events:')
 	[print(event) for event in events]
