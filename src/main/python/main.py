@@ -39,14 +39,112 @@ def buildAllDayEvent(title, startStr, endStr):
 def addHours(dateTimeStr, h):
 	return (datetime.fromisoformat(dateTimeStr)+timedelta(hours=h)).isoformat()
 
+# XML parsing functions
+def getCourseDisplayName(courseFilePath):
+	courseXML = ET.parse(courseFilePath)
+	attrib = courseXML.getroot().attrib
+
+	return attrib.get('display_name').strip('\"')
+
+def appendGlobalEvents(courseFilePath, events):
+	courseXML = ET.parse(courseFilePath)
+	attrib = courseXML.getroot().attrib
+
+	globalCourseEvents = [
+	['Course start', attrib.get('start').strip('\"')],
+	['Course end', attrib.get('end').strip('\"')],
+	['Enrollment start', attrib.get('enrollment_start').strip('\"')],
+	['Enrollment end', attrib.get('enrollment_end').strip('\"')]
+	]
+
+	for globalEvent in globalCourseEvents:
+		event = buildAllDayEvent(globalEvent[0], globalEvent[1], globalEvent[1])
+		events.append(event)
+
+	return events
+
+def appendNewContentsEvents(chapterDir, events, eventDurationH=1, createAllDayEvents=True):
+	titlePrefix = {'en':'New Content','pt': 'Novos Conteúdos'}
+	os.chdir(chapterDir)
+	for file in os.listdir('./'):
+		if file.endswith('.xml'):
+			attrib = ET.parse(file).getroot().attrib
+			start = attrib.get('start')
+			title = attrib.get('display_name')
+			if start:
+				start = start.strip('\"')
+				title = titlePrefix[lang] + ': ' + title.strip('\"')
+				events.append(buildEvent(title, start, addHours(start,eventDurationH)))
+				if createAllDayEvents:
+					events.append(buildAllDayEvent(title, start, start))
+			else:
+				print('    [Warning:] No start date found for chapter: '+ title + 'in file: ' + file + '.\n    You might need to change the date in Studio to a diffent one and back again.')
+	return events
+
+def appendDeadlineEvents(sequentialDir, events, deadlineDurationH=6, createAllDayEvents=True):
+	# Deadlines for subsections
+	titlePrefix = {'en': 'Deadline', 'pt': 'Fim de prazo'}
+	os.chdir(sequentialDir)
+	for file in os.listdir('./'):
+		if file.endswith('.xml'):
+			attrib = ET.parse(file).getroot().attrib
+			due = attrib.get('due')
+			if due:
+				due = due.strip('\"')
+				title = titlePrefix[lang] + ': ' + attrib.get('display_name').strip('\"')
+				events.append(buildEvent(title, addHours(due, - deadlineDurationH), due))
+				if createAllDayEvents:
+					events.append(buildAllDayEvent(title, due, due))
+	return events
+
+def appendPeerReviewEvents(verticalDir, events, createAllDayEvents=True, eventDurationH=1, deadlineDurationH=6):
+	# Peer Review
+	titlePrefixSubStart = {'en': 'Response submission opened', 'pt': 'Início submissão de respostas'}
+	titlePrefixSubDue   = {'en': 'Response submission deadline', 'pt': 'Fim de prazo submissão de respostas'}
+	titlePrefixPAstart  = {'en': 'Peer assessment start', 'pt': 'Início avaliação dos pares'}
+	titlePrefixPAdue    = {'en': 'Peer assessment deadline', 'pt': 'Fim de prazo avaliação dos pares'}
+	os.chdir(verticalDir)
+	for file in os.listdir('./'):
+		if file.endswith('.xml'):
+			root = ET.parse(file).getroot()
+			for PR in root.iter('openassessment'):
+				PRtitle = PR.find('title').text
+				attrib = PR.attrib
+				sub_start = attrib.get('submission_start')
+				sub_due = attrib.get('submission_due')
+				if sub_start:
+					sub_start = sub_start.strip('\"')
+					title = titlePrefixSubStart[lang] + ': ' + PRtitle
+					events.append(buildEvent(title, sub_start, addHours(sub_start, eventDurationH)))
+					events.append(buildAllDayEvent(title, sub_start, sub_start))
+				if sub_due:
+					sub_due = sub_due.strip('\"')
+					title = titlePrefixSubDue[lang] + ': ' + PRtitle
+					events.append(buildEvent(title, addHours(sub_due, - deadlineDurationH), sub_due))
+					events.append(buildAllDayEvent(title, sub_due, sub_due))
+				for assessments in PR.findall('assessments'):
+					for assessment in assessments.findall('assessment'):
+						PAattrib = assessment.attrib
+						PAstart = PAattrib.get('start')
+						PAdue = PAattrib.get('due')
+						if PAstart:
+							PAstart = PAstart.strip('\"')
+							title = titlePrefixPAstart[lang] + ': ' + PRtitle
+							events.append(buildEvent(title, PAstart, addHours(PAstart, eventDurationH)))
+							events.append(buildAllDayEvent(title, PAstart, PAstart))
+						if PAdue:
+							PAdue = PAdue.strip('\"')
+							title = titlePrefixPAdue[lang] + ': ' + PRtitle
+							events.append(buildEvent(title, addHours(PAdue, - deadlineDurationH), PAdue))
+							events.append(buildAllDayEvent(title, PAdue, PAdue))
+
 if __name__ == '__main__':
 	appctxt = ApplicationContext()       # 1. Instantiate ApplicationContext
 
 	# Create support dirs
 	tmpOutputDir = os.path.join(
 		appctxt.build_settings['tmp_dir'],
-		appctxt.build_settings['app_name']
-		)
+		appctxt.build_settings['app_name'])
 	# clean tmp dir
 	if os.path.exists(tmpOutputDir):
 		shutil.rmtree(tmpOutputDir)
@@ -91,7 +189,8 @@ if __name__ == '__main__':
 	# get user input
 	lang = "en"
 	courseRun = "2020"
-	file = "course.MBoeOd.tar.gz"
+	# file = "course.MBoeOd.tar.gz"
+	file = 'course.jAoyT2.tar.gz'
 
 	absPath= os.path.abspath(file) 
 
@@ -100,26 +199,14 @@ if __name__ == '__main__':
 	tar.extractall()
 	tar.close()
 
-	courseDir = './course/'
-	courseFile = './course/course.xml'
-	chapterDir = './chapter/'
-	sequentialDir = './sequential/'
-	verticalDir = './vertical/'
+	courseDir = os.path.join(tmpOutputDir, 'course')
+	courseFile = os.path.join(courseDir, 'course', 'course.xml')
+	chapterDir = os.path.join(courseDir, 'chapter')
+	sequentialDir = os.path.join(courseDir, 'sequential')
+	verticalDir = os.path.join(courseDir, 'vertical')
 
-	os.chdir(courseDir)
 
-	courseXML = ET.parse(courseFile)
-	attrib = courseXML.getroot().attrib
-
-	display_name = attrib.get('display_name').strip('\"')
-
-	globalCourseEvents = [
-	['Course start', attrib.get('start').strip('\"')],
-	['Course end', attrib.get('end').strip('\"')],
-	['Enrollment start', attrib.get('enrollment_start').strip('\"')],
-	['Enrollment end', attrib.get('enrollment_end').strip('\"')]
-	]
-
+	display_name = getCourseDisplayName(courseFile)
 	calName = 'MOOC Técnico: ' + display_name + ' (ed. ' + courseRun +')'
 	calendar = {
 	'summary': calName,
@@ -153,89 +240,21 @@ if __name__ == '__main__':
 	if not created_calendar:
 			print('Creating new calendar...')
 			created_calendar = service.calendars().insert(body=calendar).execute()
-	
+
+	# os.chdir(courseDir)
+
 	events = []
-
-	for globalEvent in globalCourseEvents:
-		event = buildAllDayEvent(globalEvent[0], globalEvent[1], globalEvent[1])
-		events.append(event)
-
-	# New contents
-	titlePrefix = {'en':'New Content','pt': 'Novos Conteúdos'}
-	os.chdir(chapterDir)
-	for file in os.listdir('./'):
-		if file.endswith('.xml'):
-			attrib = ET.parse(file).getroot().attrib
-			start = attrib.get('start')
-			title = attrib.get('display_name')
-			if start:
-				start = start.strip('\"')
-				title = titlePrefix[lang] + ': ' + title.strip('\"')
-				events.append(buildEvent(title, start, addHours(start,1)))
-				events.append(buildAllDayEvent(title, start, start))
-			else:
-				print('    [Warning:] No start date found for chapter: '+ title + 'in file: ' + file + '.\n    You might need to change the date in Studio to a diffent one and back again.')
-
-	# Deadlines for subsections
-	titlePrefix = {'en': 'Deadline', 'pt': 'Fim de prazo'}
-	os.chdir('../'+sequentialDir)	
-	for file in os.listdir('./'):
-		if file.endswith('.xml'):
-			attrib = ET.parse(file).getroot().attrib
-			due = attrib.get('due')
-			if due:
-				due = due.strip('\"')
-				title = titlePrefix[lang] + ': ' + attrib.get('display_name').strip('\"')
-				events.append(buildEvent(title, addHours(due,-6), due))
-				events.append(buildAllDayEvent(title, due, due))
-
-	# Peer Review
-	titlePrefixSubStart = {'en': 'Response submission opened', 'pt': 'Início submissão de respostas'}
-	titlePrefixSubDue   = {'en': 'Response submission deadline', 'pt': 'Fim de prazo submissão de respostas'}
-	titlePrefixPAstart  = {'en': 'Peer assessment start', 'pt': 'Início avaliação dos pares'}
-	titlePrefixPAdue    = {'en': 'Peer assessment deadline', 'pt': 'Fim de prazo avaliação dos pares'}
-	os.chdir('../'+verticalDir)
-	for file in os.listdir('./'):
-		if file.endswith('.xml'):
-			root = ET.parse(file).getroot()
-			for PR in root.iter('openassessment'):
-				PRtitle = PR.find('title').text
-				print(title)
-				attrib = PR.attrib
-				sub_start = attrib.get('submission_start')
-				sub_due = attrib.get('submission_due')
-				if sub_start:
-					sub_start = sub_start.strip('\"')
-					title = titlePrefixSubStart[lang] + ': ' + PRtitle
-					events.append(buildEvent(title, sub_start, addHours(sub_start,1)))
-					events.append(buildAllDayEvent(title, sub_start, sub_start))
-				if sub_due:
-					sub_due = sub_due.strip('\"')
-					title = titlePrefixSubDue[lang] + ': ' + PRtitle
-					events.append(buildEvent(title, addHours(sub_due,-6), sub_due))
-					events.append(buildAllDayEvent(title, sub_due, sub_due))
-				for assessments in PR.findall('assessments'):
-					for assessment in assessments.findall('assessment'):
-						PAattrib = assessment.attrib
-						PAstart = PAattrib.get('start')
-						PAdue = PAattrib.get('due')
-						if PAstart:
-							PAstart = PAstart.strip('\"')
-							title = titlePrefixPAstart[lang] + ': ' + PRtitle
-							events.append(buildEvent(title, PAstart, addHours(PAstart,1)))
-							events.append(buildAllDayEvent(title, PAstart, PAstart))
-						if PAdue:
-							PAdue = PAdue.strip('\"')
-							title = titlePrefixPAdue[lang] + ': ' + PRtitle
-							events.append(buildEvent(title, addHours(PAdue,-6), PAdue))
-							events.append(buildAllDayEvent(title, PAdue, PAdue))
+	appendGlobalEvents(courseFile, events)
+	appendNewContentsEvents(chapterDir, events)
+	appendDeadlineEvents(sequentialDir, events)
+	appendPeerReviewEvents(verticalDir, events)
 
 	print('    Found events:')
 	[print(event) for event in events]
 
 	print('    Creating events...')
-	for event in events:
-		service.events().insert(calendarId=created_calendar['id'], body=event).execute()
+	# for event in events:
+	# 	service.events().insert(calendarId=created_calendar['id'], body=event).execute()
 
 	print('    Calendar Name: '+ created_calendar['summary'])
 	print('    Calendar ID: '+created_calendar['id'])
