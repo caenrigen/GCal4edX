@@ -17,6 +17,12 @@ To get started with this code:
 * Install all python 3 packages you are missing (see imports at the beggining of the code)
 If you run into trouble you can contact me by creating a new issue. More detailed instructions would be provided if you find this usefull.
 
+## venv
+```
+pip install fbs PyQt5==5.9.2
+pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+```
+
 [Google Calendar Tool]: https://edx.readthedocs.io/projects/open-edx-ca/en/dogwood/exercises_tools/google_calendar.html 
 [MOOC Técnico]: https://mooc.tecnico.ulisboa.pt
-[Python Google Calendar API]: https://developers.google.com/calendar/quickstart/python 
+[Python Google Calendar API]: https://developers.google.com/calendar/quickstart/python
