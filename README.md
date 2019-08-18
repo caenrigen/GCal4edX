@@ -19,7 +19,7 @@ If you run into trouble you can contact me by creating a new issue. More detaile
 
 ## venv
 ```
-pip install fbs PyQt5==5.9.2
+pip install fbs PyQt5
 pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 ```
 

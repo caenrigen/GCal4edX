@@ -9,6 +9,70 @@ from google.auth.transport.requests import Request
 
 from datetime import datetime, timedelta
 import sys, os, tarfile, shutil, xml.etree.ElementTree as ET, urllib.parse
+from MainWindow import *
+
+# from mainWindow import *
+
+# class mainWindow(QtWidgets.QWidget):
+# 	def __init__(self, parent=None):
+# 		QtWidgets.QWidget.__init__(self, parent)
+# 		self.ui = Ui_mainWindow()
+# 		# self.ui.pushButton.clicked.connect(onButtonClicked)
+# 		self.ui.setupUi(self)
+
+class GCalV3(object):
+	"""Performs necessary setup in order to use Google Calendar API v3"""
+	def __init__(self, settingsDir, appctxt):
+		# If modifying these scopes, delete the file token.pickle.
+		self.scopes = ['https://www.googleapis.com/auth/calendar']
+
+		self.creds = None
+		# The file token.pickle stores the user's access and refresh tokens, and is
+		# created automatically when the authorization flow completes for the first
+		# time.
+		self.tokenPath = os.path.join(settingsDir, 'token.pickle')
+		if os.path.exists(self.tokenPath):
+			with open(self.tokenPath, 'rb') as token:
+				self.creds = pickle.load(token)
+		# If there are no (valid) credentials available, let the user log in.
+		if not self.creds or not self.creds.valid:
+			if self.creds and self.creds.expired and self.creds.refresh_token:
+				self.creds.refresh(Request())
+			else:
+				flow = InstalledAppFlow.from_client_secrets_file(
+					appctxt.get_resource('credentials.json'), self.scopes)
+				self.creds = flow.run_local_server()
+			# Save the credentials for the next run
+			with open(self.tokenPath, 'wb') as token:
+				pickle.dump(self.creds, token)
+
+		self.service = build('calendar', 'v3', credentials=self.creds)
+
+class MainWindowUI(QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        # self.model = Model()
+
+    def setupUi(self, mainWindow):
+        super().setupUi(mainWindow)
+
+    def debugPrint(self, msg):
+        self.textEdit.append(msg)
+
+    def refreshAll(self):
+        self.lineEdit.setText(self.model.getFileName())
+        self.textEdit.setText(self.model.getFileContents())
+
+    @QtCore.pyqtSlot()
+    def createCalendarSlot(self):
+        pass
+        # self.debugPrint('Creat Calendar pressed')
+
+    @QtCore.pyqtSlot()
+    def browseSlot(self):
+        onButtonClicked()
+        # self.debugPrint('Browse button pressed')
 
 def onButtonClicked():
 	alert = QMessageBox()
@@ -159,31 +223,8 @@ if __name__ == '__main__':
 	if not os.path.exists(settingsDir):
 		os.makedirs(settingsDir)
 
-	# If modifying these scopes, delete the file token.pickle.
-	SCOPES = ['https://www.googleapis.com/auth/calendar']
-
-	creds = None
-	# The file token.pickle stores the user's access and refresh tokens, and is
-	# created automatically when the authorization flow completes for the first
-	# time.
-	tokenPath = os.path.join(settingsDir, 'token.pickle')
-	if os.path.exists(tokenPath):
-		with open(tokenPath, 'rb') as token:
-			creds = pickle.load(token)
-	# If there are no (valid) credentials available, let the user log in.
-	if not creds or not creds.valid:
-		if creds and creds.expired and creds.refresh_token:
-			creds.refresh(Request())
-		else:
-			flow = InstalledAppFlow.from_client_secrets_file(
-				appctxt.get_resource('credentials.json'), SCOPES)
-			creds = flow.run_local_server()
-		# Save the credentials for the next run
-		with open(tokenPath, 'wb') as token:
-			pickle.dump(creds, token)
-
-	service = build('calendar', 'v3', credentials=creds)
-
+	gcalv3 = GCalV3(settingsDir, appctxt)
+	service = gcalv3.service
 
 # ====
 	# get user input
@@ -269,15 +310,18 @@ if __name__ == '__main__':
 	# clean tmp dir
 	shutil.rmtree(tmpOutputDir)
 
-# ====
-	window = QWidget()
+	# =========================
 	#app = QApplication([])
-	appctxt.app.setStyle('Macintosh')
-	layout = QVBoxLayout()
-	button = QPushButton('Create Calendar')
-	button.clicked.connect(onButtonClicked)
-	layout.addWidget( button )
-	window.setLayout(layout)
+	# window = QWidget()
+	# appctxt.app.setStyle('Macintosh')
+	# layout = QVBoxLayout()
+	# button = QPushButton('Create Calendar')
+	# button.clicked.connect(onButtonClicked)
+	# layout.addWidget(button)
+	# window.setLayout(layout)
+	# window.show()
+	window = MainWindowUI()
 	window.show()
+
 	exit_code = appctxt.app.exec_()      # 2. Invoke appctxt.app.exec_()
 	sys.exit(exit_code)
