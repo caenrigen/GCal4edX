@@ -86,5 +86,7 @@ class GCalV3(object):
 		return publicLinkPrefix + urllib.parse.quote_plus(self.calendar['id']) + publicLinkSufix
 
 	def uploadEvents(self, events):
+		print("Uploading events...")
 		for event in events:
 			self.service.events().insert(calendarId=self.getCalId(), body=event).execute()
+		print("Done!")
