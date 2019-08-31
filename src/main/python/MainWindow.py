@@ -36,9 +36,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.progressBar)
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
-        self.label_4 = QtWidgets.QLabel(self.layoutWidget)
-        self.label_4.setObjectName("label_4")
-        self.horizontalLayout_4.addWidget(self.label_4)
         self.label_5 = QtWidgets.QLabel(self.layoutWidget)
         self.label_5.setObjectName("label_5")
         self.horizontalLayout_4.addWidget(self.label_5)
@@ -135,7 +132,6 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "GCal4edX"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Generate Google Calendar"))
-        self.label_4.setText(_translate("MainWindow", "Status:"))
         self.label_5.setText(_translate("MainWindow", "Hi, there!"))
         self.pushButton_2.setText(_translate("MainWindow", "Create Google Calendar"))
         self.groupBox_2.setTitle(_translate("MainWindow", "Google Calendar Settings"))

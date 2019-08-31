@@ -43,36 +43,76 @@ class GCalV3(object):
 	def setCalName(self, name):
 		self.targetCalName = name
 
-	def createOrClearCal(self):
+	def getSameNameCals(self):
 		calendars = self.service.calendarList().list().execute()['items']
-		# clear calendar if exists
+		sameNameCals = []
 		for cal in calendars:
-			if cal['summary']==self.targetCalName:
-				if not self.calendar:
-					print('\"' + self.targetCalName + '\" calendar found.\nDeleting all events...')
-					self.calendar = cal
-					page_token = None
-					allEvents = []
-					while True:
-						events = self.service.events().list(calendarId=self.calendar['id'], pageToken=page_token).execute()
-						for event in events['items']:
-							allEvents.append(event)
-						page_token = events.get('nextPageToken')
-						if not page_token:
-							break
-					for event in allEvents:
-						self.service.events().delete(calendarId=cal['id'], eventId=event['id']).execute()
-						# print('Deleted event w/ id: '+event['id'])
-				else:
-					print('Found one more calendar with same name! Only the first was cleared!')
+			if cal['summary'] == self.targetCalName:
+				sameNameCals.append(cal)
+		return sameNameCals
+
+	def setTargetCal(self, cal):
+		self.calendar = cal
+
+	def createGCal(self):
+		calBody = {
+		'summary': self.targetCalName,
+		'timeZone': self.timeZone
+		}
+		self.calendar = self.service.calendars().insert(body=calBody).execute()
+
+	def getAllEventsFromCal(self, cal = None):
+		if cal == None:
+			cal = self.calendar
+		page_token = None
+		allEvents = []
+		while True:
+			events = self.service.events().list(calendarId=self.calendar['id'], pageToken=page_token).execute()
+			for event in events['items']:
+				allEvents.append(event)
+			page_token = events.get('nextPageToken')
+			if not page_token:
+				break
+		return allEvents
+
+	def clearEventsInCal(self, allEvents = None, cal = None):
+		if cal == None:
+			cal = self.calendar
+		if allEvents == None:
+			allEvents = self.getAllEventsFromCal(cal)
+		for event in allEvents:
+			self.service.events().delete(calendarId=cal['id'], eventId=event['id']).execute()
+
+	# def createOrClearCal(self):
+	# 	calendars = self.service.calendarList().list().execute()['items']
+	# 	# clear calendar if exists
+	# 	for cal in calendars:
+	# 		if cal['summary']==self.targetCalName:
+	# 			if not self.calendar:
+	# 				print('\"' + self.targetCalName + '\" calendar found.\nDeleting all events...')
+	# 				self.calendar = cal
+	# 				page_token = None
+	# 				allEvents = []
+	# 				while True:
+	# 					events = self.service.events().list(calendarId=self.calendar['id'], pageToken=page_token).execute()
+	# 					for event in events['items']:
+	# 						allEvents.append(event)
+	# 					page_token = events.get('nextPageToken')
+	# 					if not page_token:
+	# 						break
+	# 				for event in allEvents:
+	# 					self.service.events().delete(calendarId=cal['id'], eventId=event['id']).execute()
+	# 					# print('Deleted event w/ id: '+event['id'])
+	# 			else:
+	# 				print('Found one more calendar with same name! Only the first was cleared!')
 		
-		if not self.calendar:
-				print('Creating new calendar...')
-				calBody = {
-				'summary': self.targetCalName,
-				'timeZone': self.timeZone
-				}
-				self.calendar = self.service.calendars().insert(body=calBody).execute()
+	# 	if not self.calendar:
+	# 			print('Creating new calendar...')
+	# 			calBody = {
+	# 			'summary': self.targetCalName,
+	# 			'timeZone': self.timeZone
+	# 			}
+	# 			self.calendar = self.service.calendars().insert(body=calBody).execute()
 
 	def getCalName(self):
 		return self.calendar['summary']

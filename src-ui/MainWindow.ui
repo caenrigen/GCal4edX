@@ -63,13 +63,6 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Status:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QLabel" name="label_5">
          <property name="text">
           <string>Hi, there!</string>
