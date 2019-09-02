@@ -1,26 +1,49 @@
 from PyQt5.QtWidgets import *
-from PyQt5 import QtCore
+from PyQt5.QtCore import *
 
 # App modules
 from MainWindow import *
+from CalendarCreatedDialog import *
 from Model import *
+
+
+class CalendarCreatedDialogUI(QDialog, Ui_CalendarCreatedDialog):
+
+	def __init__(self):
+		super(CalendarCreatedDialogUI, self).__init__()
+		self.setupUi(self)
+		self.clipboard = QApplication.clipboard()
+
+		self.pushButton.pressed.connect(self.nameToClipboard)
+		self.pushButton_2.pressed.connect(self.idToClipboard)
+		self.pushButton_3.pressed.connect(self.linkToClipboard)
+
+	# SLOTS
+	@pyqtSlot()
+	def nameToClipboard(self):
+		self.clipboard.setText(self.lineEdit.text())
+
+	@pyqtSlot()
+	def idToClipboard(self):
+		self.clipboard.setText(self.lineEdit_2.text())
+
+	@pyqtSlot()
+	def linkToClipboard(self):
+		self.clipboard.setText(self.lineEdit_3.text())
+
 
 class MainWindowUI(QMainWindow, Ui_MainWindow):
 	def __init__(self, appctxt):
 		super(MainWindowUI, self).__init__()
 		self.setupUi(self)
 
-		print('MainWindow id ->', int(QtCore.QThread.currentThreadId()))
-
 		self.model = Model(appctxt)
 		self.model.maximumChanged.connect(self.progressBar.setMaximum)
 		self.model.progressChanged.connect(self.progressBar.setValue)
 		self.model.sameNameCalExists.connect(self.confirmCalUpdate)
+		self.model.eventsUploadSuccess.connect(self.eventsUploadSuccessSlot)
 
-		self.createCalUploadEventsSig.connect(self.model.createCalUploadEvents)
-		# self.model.processQtEvents.connect(self.QApplication.processEvents())
-
-		self.thread = QtCore.QThread(self)
+		self.thread = QThread(self)
 		self.model.moveToThread(self.thread)
 		self.thread.start()
 
@@ -49,10 +72,10 @@ class MainWindowUI(QMainWindow, Ui_MainWindow):
 		self.model.setTarFileName(fileName)
 
 	# SLOTS
-	@QtCore.pyqtSlot()
+	@pyqtSlot()
 	def confirmCalUpdate(self):
 		msg = QMessageBox()
-		msg.setIcon(QMessageBox.Question)
+		msg.setIcon(QMessageBox.Warning)
 		msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
 		msg.setText("Update existing calendar?")
 		msg.setInformativeText("A Google calendar with the same name already exists in your account.\nClicking OK will delete all existing events and create the new events.")
@@ -61,62 +84,18 @@ class MainWindowUI(QMainWindow, Ui_MainWindow):
 		msg.buttonClicked.connect(self.confirmCalUpdateSlot)
 		msg.show()
 
-		retval = msg.exec_()
+		retVal = msg.exec_()
 
-	@QtCore.pyqtSlot()
+	@pyqtSlot()
 	def createCalendarSlot(self):
 		self.model.lang = self.comboBox.currentText()
 		self.model.courseRun = self.lineEdit.text()
 		self.model.courseName = self.lineEdit_4.text()
 		self.model.buildCalName()
 
-		QtCore.QTimer.singleShot(0, self.model.createCalUploadEvents)
+		QTimer.singleShot(0, self.model.createCalUploadEvents)
 
-		# self.model.eventsBuilder.setCalLang(lang)
-		# self.model.eventsBuilder.buildAllEvents()
-
-		# self.model.gcalv3.setCalName(calName)
-		# cals = self.model.gcalv3.getSameNameCals()
-		# if len(cals) > 0:
-		# 	self.confirmCalUpdate() # Freezes de code here
-		# 	if self.updateCalOK:
-		# 		self.model.gcalv3.setTargetCal(cals[0])
-		# 		# self.model.gcalv3.clearEventsInCal()
-		# 		allEvents = self.model.gcalv3.getAllEvents()
-				
-		# 		print(len(allEvents))
-		# 		self.maximumChanged.emit(len(allEvents))
-
-		# 		for i, event in enumerate(allEvents):
-		# 			print('Deleting event: ' + event['id'])
-
-		# 			self.progressChanged.emit(i)
-
-		# 			# self.model.gcalv3.deleteEvent(event)
-
-		# 		events = self.model.eventsBuilder.events
-
-		# 		self.maximumChanged.emit(len(events))
-
-		# 		print('Uploading events...')
-		# 		for i, event in enumerate(events):
-		# 			print(event)
-
-		# 			self.progressChanged.emit(i)
-					
-		# 			# self.model.gcalv3.uploadEvent(event)
-		# 		# self.model.gcalv3.uploadEvents(self.model.eventsBuilder.events)
-		# else:
-		# 	self.model.gcalv3.createGCal()
-		# 	print('Uploading events...')
-		# 	for i, event in enumerate(events):
-		# 		print(event)
-
-		# 		self.progressChanged.emit(i)
-
-		# 		self.model.gcalv3.uploadEvent(event)
-		# 	# self.model.gcalv3.uploadEvents(self.model.eventsBuilder.events)
-	@QtCore.pyqtSlot()
+	@pyqtSlot()
 	def browseSlot(self):
 		# self.openFileNameDialog()
 		# ===
@@ -125,14 +104,42 @@ class MainWindowUI(QMainWindow, Ui_MainWindow):
 		self.lineEdit_3.setText(self.model.courseTarFile)
 		self.model.unpackTar()
 		self.lineEdit_4.setText(self.model.eventsBuilder.getCourseDisplayName())
-	@QtCore.pyqtSlot()
+
+	@pyqtSlot()
 	def settingsChangedSlot(self):
 		if self.lineEdit.text() != '' and self.model.tarUnpacked:
 			self.pushButton_2.setEnabled(True)
 		else:
 			self.pushButton_2.setDisabled(True)
-	@QtCore.pyqtSlot()
+
+	@pyqtSlot(QAbstractButton)
 	def confirmCalUpdateSlot(self, button):
 		if button.text() == 'OK':
-			self.model.updateCalEvents()
+			QTimer.singleShot(0, self.model.updateCalEvents)
 
+	@pyqtSlot()
+	def eventsUploadSuccessSlot(self):
+		dialog = CalendarCreatedDialogUI()
+		dialog.lineEdit.setText(self.model.gcalv3.getCalName())
+		dialog.lineEdit_2.setText(self.model.gcalv3.getCalId())
+		dialog.lineEdit_3.setText(self.model.gcalv3.getCalPublicLink())
+
+		dialog.setModal(True)
+
+		dialog.show()
+
+		retVal = dialog.exec_()
+
+	@pyqtSlot()
+	def advancedSettingsChangedSlot(self):
+		eb = self.model.eventsBuilder
+		eb.emailReminderBeforeH = self.spinBox_3.value()
+		eb.eventDurationH = self.spinBox.value()
+		eb.defaultReminders = not self.groupBox_6.isChecked()
+		eb.deadlineDurationH = self.spinBox_2.value()
+		eb.createAllDayEvents = self.checkBox.isChecked()
+
+	@pyqtSlot()
+	def logoutSlot(self):
+		self.model.gcalv3.logout()
+		QApplication.exit()

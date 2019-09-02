@@ -3,11 +3,12 @@ from datetime import datetime, timedelta
 import os, xml.etree.ElementTree as ET
 
 class EventsBuilder(object):
-	def __init__(self, createAllDayEvents=True, eventDurationH=1, deadlineDurationH=6, emailReminderBeforeH=24):
+	def __init__(self, createAllDayEvents=True, eventDurationH=1, deadlineDurationH=6, defaultReminders=False, emailReminderBeforeH=24):
 		self.emailReminderBeforeH = emailReminderBeforeH
 		self.eventDurationH = eventDurationH
 		self.createAllDayEvents = createAllDayEvents
 		self.deadlineDurationH = deadlineDurationH
+		self.defaultReminders = defaultReminders
 
 		# To be set up later
 		self.tmpOutputDir = ''
@@ -38,7 +39,7 @@ class EventsBuilder(object):
 		'start': {'dateTime': startStr},
 		'end': {'dateTime': endStr},
 		'reminders': {
-			'useDefault': False,
+			'useDefault': self.defaultReminders,
 			'overrides': [
 				{'method': 'email', 'minutes': self.emailReminderBeforeH * 60}
 				]

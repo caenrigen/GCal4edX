@@ -20,12 +20,6 @@ if __name__ == '__main__':
 	window = MainWindowUI(appctxt)
 	window.show()
 
-	# print('    Found events:')
-	# [print(event) for event in eventsBuilder.events]
-
-	# print('    Creating events...')
-	# # model.gcalv3.uploadEvents(eventsBuilder.events)
-
 	# print('    Calendar Name: '+ model.gcalv3.getCalName())
 	# print('    Calendar ID: '+ model.gcalv3.getCalId())
 
