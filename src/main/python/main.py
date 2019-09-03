@@ -20,13 +20,6 @@ if __name__ == '__main__':
 	window = MainWindowUI(appctxt)
 	window.show()
 
-	# print('    Calendar Name: '+ model.gcalv3.getCalName())
-	# print('    Calendar ID: '+ model.gcalv3.getCalId())
-
-	# print('    Calendar Public Link: ' + model.gcalv3.getCalPublikLink())
-	# print('    [NOTE: You must set the calendar to public!]')
-	# print('    NB: Subscribe to the calendar yourself!')
-
 	exit_code = appctxt.app.exec_()      # 2. Invoke appctxt.app.exec_()
 	# clean tmp dir
 	shutil.rmtree(window.model.tmpOutputDir)

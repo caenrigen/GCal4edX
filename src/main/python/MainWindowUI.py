@@ -37,29 +37,23 @@ class MainWindowUI(QMainWindow, Ui_MainWindow):
 		super(MainWindowUI, self).__init__()
 		self.setupUi(self)
 
+		self.statusLabel = QLabel()
+		self.statusLabel.setText('Hi, there!')
+		self.statusbar.addWidget(self.statusLabel)
+
 		self.model = Model(appctxt)
 		self.model.maximumChanged.connect(self.progressBar.setMaximum)
 		self.model.progressChanged.connect(self.progressBar.setValue)
 		self.model.sameNameCalExists.connect(self.confirmCalUpdate)
 		self.model.eventsUploadSuccess.connect(self.eventsUploadSuccessSlot)
+		self.model.statusMsgChanged.connect(self.modelStatusChangeSlot)
 
 		self.thread = QThread(self)
 		self.model.moveToThread(self.thread)
 		self.thread.start()
 
-		# ===
-		self.browseSlot()
-		# ===
-
 	def setupUi(self, mainWindow):
 		super().setupUi(mainWindow)
-
-	# def debugPrint(self, msg):
-	# 	self.textEdit.append(msg)
-
-	# def refreshAll(self):
-	# 	self.lineEdit.setText(self.model.getFileName())
-	# 	self.textEdit.setText(self.model.getFileContents())
 
 	def openFileNameDialog(self):
 		options = QFileDialog.Options()
@@ -72,6 +66,10 @@ class MainWindowUI(QMainWindow, Ui_MainWindow):
 		self.model.setTarFileName(fileName)
 
 	# SLOTS
+	@pyqtSlot()
+	def modelStatusChangeSlot(self):
+		self.statusLabel.setText(self.model.statusMsg)
+
 	@pyqtSlot()
 	def confirmCalUpdate(self):
 		msg = QMessageBox()
@@ -97,10 +95,7 @@ class MainWindowUI(QMainWindow, Ui_MainWindow):
 
 	@pyqtSlot()
 	def browseSlot(self):
-		# self.openFileNameDialog()
-		# ===
-		self.model.setTarFileName('/Users/Victor/Documents/ProjectsDev/GCal4edX/course.jAoyT2.tar.gz')
-		# ===
+		self.openFileNameDialog()
 		self.lineEdit_3.setText(self.model.courseTarFile)
 		self.model.unpackTar()
 		self.lineEdit_4.setText(self.model.eventsBuilder.getCourseDisplayName())

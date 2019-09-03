@@ -94,7 +94,7 @@ class EventsBuilder(object):
 					if self.createAllDayEvents:
 						self.appendAllDayEvent(title, start, start)
 				else:
-					print('    [Warning:] No start date found for chapter: '+ title + 'in file: ' + file + '.\n    You might need to change the date in Studio to a diffent one and back again.')
+					print('[Warning:] No start date found for chapter: '+ title + 'in file: ' + file + '.\n    You might need to change the date in Studio to a diffent one and back again.')
 
 	def appendDeadlineEvents(self):
 		# Deadlines for subsections
