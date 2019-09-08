@@ -16,6 +16,7 @@ from Model import *
 
 if __name__ == '__main__':
 	appctxt = ApplicationContext()       # 1. Instantiate ApplicationContext
+	appctxt.app.setStyle('Macintosh')
 
 	window = MainWindowUI(appctxt)
 	window.show()

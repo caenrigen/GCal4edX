@@ -69,11 +69,16 @@ class EventsBuilder(object):
 		courseXML = ET.parse(self.courseFile)
 		attrib = courseXML.getroot().attrib
 
+		titleCourseStart = {'en': 'Course start', 'pt': 'Início do curso'}
+		titleCourseEnd =   {'en': 'Course end', 'pt': 'Fim do curso'}
+		titleEnrollStart = {'en': 'Enrollment start', 'pt': 'Abertura inscrições'}
+		titleEnrollEnd =   {'en': 'Enrollment end', 'pt': 'Fecho inscrições'}
+
 		globalCourseEvents = [
-		['Course start', attrib.get('start').strip('\"')],
-		['Course end', attrib.get('end').strip('\"')],
-		['Enrollment start', attrib.get('enrollment_start').strip('\"')],
-		['Enrollment end', attrib.get('enrollment_end').strip('\"')]
+		[ titleCourseStart[self.lang] , attrib.get('start').strip('\"')],
+		[ titleCourseEnd[self.lang] , attrib.get('end').strip('\"')],
+		[ titleEnrollStart[self.lang] , attrib.get('enrollment_start').strip('\"')],
+		[ titleEnrollEnd[self.lang] , attrib.get('enrollment_end').strip('\"')]
 		]
 
 		for globalEvent in globalCourseEvents:
@@ -156,6 +161,7 @@ class EventsBuilder(object):
 								if self.createAllDayEvents:
 									self.appendAllDayEvent(title, PAdue, PAdue)
 	def buildAllEvents(self):
+		self.events = []
 		self.appendGlobalEvents()
 		self.appendNewContentsEvents()
 		self.appendDeadlineEvents()
