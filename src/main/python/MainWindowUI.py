@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 
 # App modules
 from MainWindow import *
@@ -29,7 +30,11 @@ class CalendarCreatedDialogUI(QDialog, Ui_CalendarCreatedDialog):
 
 	@pyqtSlot()
 	def linkToClipboard(self):
-		self.clipboard.setText(self.lineEdit_3.text())
+		self.clipboard.setText(self.lineEdit_3.text())	
+
+	@pyqtSlot()
+	def openGCalBrowserSlot(self):
+		QDesktopServices.openUrl(QUrl('https://calendar.google.com/'))
 
 
 class MainWindowUI(QMainWindow, Ui_MainWindow):

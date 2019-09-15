@@ -1,4 +1,4 @@
-import os, shutil, tarfile
+import os, shutil, tarfile, math
 from PyQt5.QtCore import pyqtSignal, QObject, QThread
 
 # App modules
@@ -123,12 +123,11 @@ class Model(QObject):
 		else:
 			self.statusMsg = 'Creating new calendar...'
 			self.gcalv3.createGCal()
-			self.statusMsg = 'Uploading events...'
+
 			self.maximumChanged.emit(len(self.events) - 1)
-			for i, event in enumerate(self.events):
-				self.progressChanged.emit(i)
-				# QThread.msleep(10)
-				self.gcalv3.uploadEvent(event)
+			self.statusMsg = 'Uploading events...'
+			self.runWithExpBackOff(self.gcalv3.uploadEvent, self.events)
+
 			self.statusMsg = 'Done!'
 			self.eventsUploadSuccess.emit()
 
@@ -143,20 +142,32 @@ class Model(QObject):
 		self.maximumChanged.emit(len(allEvents) - 1)
 
 		self.statusMsg = 'Deleting all events in calendar...'
-		for i, event in enumerate(allEvents):
-			self.progressChanged.emit(i)
-			# QThread.msleep(10)
-			self.gcalv3.deleteEvent(event)
+		self.runWithExpBackOff(self.gcalv3.deleteEvent, allEvents)
 
-		events = self.eventsBuilder.events
+		events = self.events
 
 		self.maximumChanged.emit(len(events) - 1)
 
 		self.statusMsg = 'Uploading events...'
-		for i, event in enumerate(events):
-			self.progressChanged.emit(i)
-			# QThread.msleep(10)
-			self.gcalv3.uploadEvent(event)
+		self.runWithExpBackOff(self.gcalv3.uploadEvent, events)
 
 		self.statusMsg = 'Done!'
 		self.eventsUploadSuccess.emit()
+
+	def runWithExpBackOff(self, func, events):
+		i = 0
+		expWaitCnt = 4 # Exponential back off when Google's server rise errors
+		waitMs = 0
+		numEvent = len(events)
+		while i is not numEvent:
+			self.progressChanged.emit(i)
+			self.statusMsg = 'Processing event {}/{}'.format(i, numEvent)
+			if waitMs is not 0:
+				QThread.msleep(waitMs)
+			try:
+				func(events[i])
+				i+=1
+			except Exception as e:
+				self.statusMsg = 'Error processing event. Trying again in {0:.2f}s'.format(waitMs/1000)
+				expWaitCnt+=1
+				waitMs = int(math.exp(expWaitCnt))

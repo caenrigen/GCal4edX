@@ -257,8 +257,8 @@
    <slot>selectAll()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>457</x>
-     <y>111</y>
+     <x>772</x>
+     <y>112</y>
     </hint>
     <hint type="destinationlabel">
      <x>327</x>
@@ -273,7 +273,7 @@
    <slot>selectAll()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>457</x>
+     <x>772</x>
      <y>154</y>
     </hint>
     <hint type="destinationlabel">
@@ -289,14 +289,33 @@
    <slot>selectAll()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>457</x>
-     <y>197</y>
+     <x>772</x>
+     <y>195</y>
     </hint>
     <hint type="destinationlabel">
-     <x>333</x>
-     <y>191</y>
+     <x>442</x>
+     <y>189</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>CalendarCreatedDialog</receiver>
+   <slot>openGCalBrowserSlot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>738</x>
+     <y>268</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>617</x>
+     <y>243</y>
     </hint>
    </hints>
   </connection>
  </connections>
+ <slots>
+  <slot>openGCalBrowserSlot()</slot>
+ </slots>
 </ui>

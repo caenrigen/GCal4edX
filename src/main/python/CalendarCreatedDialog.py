@@ -130,6 +130,7 @@ class Ui_CalendarCreatedDialog(object):
         self.pushButton.released.connect(self.lineEdit.selectAll)
         self.pushButton_2.released.connect(self.lineEdit_2.selectAll)
         self.pushButton_3.released.connect(self.lineEdit_3.selectAll)
+        self.buttonBox.accepted.connect(CalendarCreatedDialog.openGCalBrowserSlot)
         QtCore.QMetaObject.connectSlotsByName(CalendarCreatedDialog)
 
     def retranslateUi(self, CalendarCreatedDialog):

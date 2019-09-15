@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>412</width>
-    <height>424</height>
+    <width>424</width>
+    <height>495</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -144,6 +144,9 @@
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
+                 <property name="placeholderText">
+                  <string>Studio -&gt; Tools -&gt; Export</string>
+                 </property>
                 </widget>
                </item>
                <item>
@@ -246,21 +249,24 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_3">
-               <item>
-                <widget class="QLabel" name="label_3">
-                 <property name="text">
-                  <string>Course Run (e.g. 2020_2)</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEdit</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="lineEdit"/>
-               </item>
-              </layout>
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Course Run (e.g. 2020_2)</string>
+               </property>
+               <property name="buddy">
+                <cstring>lineEdit</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineEdit">
+               <property name="toolTip">
+                <string/>
+               </property>
+               <property name="placeholderText">
+                <string>Studio -&gt; Settings -&gt; Schedule &amp; Details -&gt; Course Run</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -522,7 +528,6 @@
  <tabstops>
   <tabstop>pushButton</tabstop>
   <tabstop>comboBox</tabstop>
-  <tabstop>lineEdit</tabstop>
   <tabstop>pushButton_2</tabstop>
   <tabstop>lineEdit_3</tabstop>
   <tabstop>lineEdit_4</tabstop>
@@ -719,5 +724,6 @@
   <slot>createCalendarSlot()</slot>
   <slot>advancedSettingsChangedSlot()</slot>
   <slot>logoutSlot()</slot>
+  <slot>openHyperlink(QString)</slot>
  </slots>
 </ui>
