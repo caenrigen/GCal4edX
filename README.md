@@ -7,7 +7,7 @@ Developed for [MOOC Técnico].
 ## Important notes
 * Developed for Open edX Dogwood (might need adjustments for other releases)
 * Running the script again cleares all events in the calendar with the same name
-* Peer Review not supported yet
+* Peer Review partially supported
 * Requires python 3.7+ (Not tested with earlier versions)
 * All feedback and help is more than welcome
 
