@@ -14,6 +14,8 @@ You can get the latest macOS App [here].
 * Requires python 3.7+ (Not tested with earlier versions)
 * All feedback and help is more than welcome
 
+# Developer resources
+
 ## How to use this code yourself
 To get started with this code:
 * [Python Google Calendar API] - getting started tutorial
@@ -24,6 +26,15 @@ If you run into trouble you can contact me by creating a new issue. More detaile
 ```
 pip install fbs PyQt5
 pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+```
+
+## Preserve dark mode functionality on macOS
+
+Edit the `target/GCal4edX.app/Contents/Info.plist` and add the following key in the dict
+
+```
+    <key>NSRequiresAquaSystemAppearance</key>
+    <string>False</string>
 ```
 
 [Google Calendar Tool]: https://edx.readthedocs.io/projects/open-edx-ca/en/dogwood/exercises_tools/google_calendar.html 
