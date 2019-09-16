@@ -4,8 +4,8 @@ This code processes a Open edX course export file and creates a Google Calendar 
 Intended to be used with the [Google Calendar Tool] Xblock.
 Developed for [MOOC Técnico].
 
-## Download lates version
-You can get the latest macOS app [here].
+## Download latest version
+You can get the latest macOS App [here].
 
 ## Important notes
 * Developed for Open edX Dogwood (might need adjustments for other releases)
