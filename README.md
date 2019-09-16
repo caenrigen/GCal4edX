@@ -23,29 +23,29 @@ If you run into trouble you can contact me by creating a new issue. More detaile
 
 ## Required packages
 There might be other required packages, but at least the following are essential. You might want to first create a virtual env before installing all the dependencies.
-```
+```bash
 pip install fbs PyQt5
 pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 ```
 
 ## Building this app
-After you get started with the Google Calendar API, copy your `credentials.json` file into the project resource dir such that you end up with the following file:
+1. After you get started with the Google Calendar API, copy your `credentials.json` file into the project resource dir such that you end up with the following file:
 ```
 src/main/resources/base/credentials.json
 ```
-Test if the app run correctly:
-```
+2. Test if the app run correctly:
+```bash
 python build.py run # you can also run 'fbs run'
 ```
 
-Freeze the app
-```
+3. Freeze the app
+```bash
 python build.py build_ui # convert ui files into python code
 python build.py build # modified 'fbs freeze'
 ```
 
-After freezing your app you can create an installer with the following
-```
+4. After freezing your app you can create an installer with the following
+```bash
 python build.py installer # or just 'fbs installer'
 ```
 
