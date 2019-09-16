@@ -9,7 +9,6 @@ You can get the latest macOS App [here].
 
 ## Important notes
 * Developed for Open edX Dogwood (might need adjustments for other releases)
-* Running the script again cleares all events in the calendar with the same name
 * Peer Review partially supported
 * Requires python 3.7+ (Not tested with earlier versions)
 * All feedback and help is more than welcome
@@ -23,6 +22,8 @@ To get started with this code:
 If you run into trouble you can contact me by creating a new issue. More detailed instructions would be provided if you find this usefull.
 
 ## Required packages
+There might be other required packages, but at least the following are essential:
+
 ```
 pip install fbs PyQt5
 pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
