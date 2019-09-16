@@ -20,7 +20,7 @@ To get started with this code:
 * Install all python 3 packages you are missing (see imports at the beggining of the code)
 If you run into trouble you can contact me by creating a new issue. More detailed instructions would be provided if you find this usefull.
 
-## required packages
+## Required packages
 ```
 pip install fbs PyQt5
 pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
