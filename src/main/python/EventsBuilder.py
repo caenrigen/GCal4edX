@@ -1,6 +1,9 @@
 
 from datetime import datetime, timedelta
 import os, xml.etree.ElementTree as ET
+import logging
+
+log = logging.getLogger(__name__)
 
 class EventsBuilder(object):
 	def __init__(self, createAllDayEvents=True, eventDurationH=1, deadlineDurationH=6, defaultReminders=False, emailReminderBeforeH=24):
@@ -99,7 +102,7 @@ class EventsBuilder(object):
 					if self.createAllDayEvents:
 						self.appendAllDayEvent(title, start, start)
 				else:
-					print('[Warning:] No start date found for chapter: '+ title + 'in file: ' + file + '.\n    You might need to change the date in Studio to a diffent one and back again.')
+					log.warning('No start date found for chapter: "'+ title + '"" in file: ' + file + '.\n    You might need to change the date in Studio to a diffent one and back again.')
 
 	def appendDeadlineEvents(self):
 		# Deadlines for subsections

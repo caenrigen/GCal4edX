@@ -159,7 +159,7 @@
         <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>Publick Link</string>
+           <string>Publick address in iCal format</string>
           </property>
           <property name="buddy">
            <cstring>lineEdit_3</cstring>

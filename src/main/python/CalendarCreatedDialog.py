@@ -142,7 +142,7 @@ class Ui_CalendarCreatedDialog(object):
         self.pushButton.setText(_translate("CalendarCreatedDialog", "Copy"))
         self.label_3.setText(_translate("CalendarCreatedDialog", "ID"))
         self.pushButton_2.setText(_translate("CalendarCreatedDialog", "Copy"))
-        self.label_4.setText(_translate("CalendarCreatedDialog", "Publick Link"))
+        self.label_4.setText(_translate("CalendarCreatedDialog", "Publick address in iCal format"))
         self.pushButton_3.setText(_translate("CalendarCreatedDialog", "Copy"))
         self.label_5.setText(_translate("CalendarCreatedDialog", "NB: Make the Google Calendar public  before using the link!"))
 
