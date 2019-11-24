@@ -179,7 +179,7 @@ class EventsBuilder(object):
                         log.warning(
                             'No start date found for chapter: "'
                             + title
-                            + '"" in file: '
+                            + '" in file: '
                             + file
                             + ". You might need to change the date in Studio to a diffent one and back again."
                         )
