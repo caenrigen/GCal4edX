@@ -22,7 +22,11 @@ class GCalV3(object):
         self.sameNameCals = []
 
         # If modifying these scopes, delete the file token.pickle.
-        self.scopes = ["https://www.googleapis.com/auth/calendar"]
+        self.scopes = [
+            "https://www.googleapis.com/auth/calendar"
+            "https://www.googleapis.com/auth/userinfo.email",
+            "openid"
+        ]
 
         self.creds = None
         # The file token.pickle stores the user's access and refresh tokens, and is
