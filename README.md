@@ -50,18 +50,18 @@ mkdir ./src/main/resources; mkdir ./src/main/resources/base/
 
 6. Test if the app runs correctly:
 ```bash
-python build.py run # you can also run 'fbs run'
+python3 build.py run # you can also run 'fbs run'
 ```
 
 7. Freeze the app
 ```bash
-python build.py build_ui # convert ui files into python code
-python build.py build # modified 'fbs freeze'
+python3 build.py build_ui # convert ui files into python code
+python3 build.py build # modified 'fbs freeze'
 ```
 
 8. After freezing your app you can create an installer with the following
 ```bash
-python build.py installer # or just 'fbs installer'
+python3 build.py installer # or just 'fbs installer'
 ```
 
 [Google Calendar Tool]: https://edx.readthedocs.io/projects/open-edx-ca/en/dogwood/exercises_tools/google_calendar.html

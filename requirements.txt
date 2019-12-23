@@ -1,5 +1,5 @@
 fbs
-PyQt5
+PyQt5==5.13.0
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
