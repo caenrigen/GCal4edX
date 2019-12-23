@@ -60,7 +60,10 @@ class GCalV3(object):
                 flow = InstalledAppFlow.from_client_secrets_file(
                     self.credFile, self.scopes
                 )
-                self.creds = flow.run_local_server()
+                # self.creds = flow.run_local_server()
+                # the default port was 8080 but there were some issue on
+                # a particular mac
+                self.creds = flow.run_local_server(port=8090)
             # Save the credentials for the next run
             with open(self.tokenPath, "wb") as token:
                 pickle.dump(self.creds, token)
