@@ -6,6 +6,22 @@ from google.auth.transport.requests import Request
 
 import urllib.parse
 import os
+import logging
+
+log = logging.getLogger(__name__)
+
+
+def getUserEmail(credentials):
+    user_info_service = build(serviceName='oauth2', version='v2', credentials=credentials)
+    user_info = None
+    try:
+        user_info = user_info_service.userinfo().get().execute()
+    except Exception as e:
+        logging.error('Cannot get user email: {}'.format(e))
+    if user_info and user_info.get('id'):
+        return user_info['email']
+    else:
+        return 'Error getting user email.'
 
 
 class GCalV3(object):
@@ -23,7 +39,7 @@ class GCalV3(object):
 
         # If modifying these scopes, delete the file token.pickle.
         self.scopes = [
-            "https://www.googleapis.com/auth/calendar"
+            "https://www.googleapis.com/auth/calendar",
             "https://www.googleapis.com/auth/userinfo.email",
             "openid"
         ]
@@ -50,6 +66,11 @@ class GCalV3(object):
                 pickle.dump(self.creds, token)
 
         self.service = build("calendar", "v3", credentials=self.creds)
+
+        self.userEmail = getUserEmail(self.creds)
+
+    def getEmail(self):
+        return self.userEmail
 
     def setCalName(self, name):
         self.targetCalName = name

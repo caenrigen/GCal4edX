@@ -30,7 +30,7 @@ class CalendarCreatedDialogUI(QDialog, Ui_CalendarCreatedDialog):
 
 	@pyqtSlot()
 	def linkToClipboard(self):
-		self.clipboard.setText(self.lineEdit_3.text())	
+		self.clipboard.setText(self.lineEdit_3.text())
 
 	@pyqtSlot()
 	def openGCalBrowserSlot(self):
@@ -52,6 +52,8 @@ class MainWindowUI(QMainWindow, Ui_MainWindow):
 		self.model.sameNameCalExists.connect(self.confirmCalUpdate)
 		self.model.eventsUploadSuccess.connect(self.eventsUploadSuccessSlot)
 		self.model.statusMsgChanged.connect(self.modelStatusChangeSlot)
+
+		self.label_11.setText(self.model.gcalv3.getEmail())
 
 		self.thread = QThread(self)
 		self.model.moveToThread(self.thread)

@@ -1,9 +1,16 @@
-import os, shutil, tarfile, math
+import os
+import shutil
+import tarfile
+import math
 from PyQt5.QtCore import pyqtSignal, QObject, QThread
 
 # App modules
-from EventsBuilder import *
-from GCalV3 import *
+from EventsBuilder import EventsBuilder
+from GCalV3 import GCalV3
+import logging
+
+log = logging.getLogger(__name__)
+
 
 class Model(QObject):
 	progressChanged = pyqtSignal(int)
@@ -58,7 +65,7 @@ class Model(QObject):
 			os.makedirs(self.tmpOutputDir)
 		else:
 			os.makedirs(self.tmpOutputDir)
-		
+
 		self.settingsDir = os.path.join(
 			os.path.expanduser(self.appctxt.build_settings['settings_dir']),
 			self.appctxt.build_settings['app_name']
@@ -73,7 +80,7 @@ class Model(QObject):
 			self.courseTarFile = ''
 
 	def isValid(self, fileName):
-		try: 
+		try:
 			file = open( fileName, 'r' )
 			file.close()
 			return True
@@ -138,7 +145,7 @@ class Model(QObject):
 
 		self.statusMsg = 'Downloading all events...'
 		allEvents = self.gcalv3.getAllEvents()
-		
+
 		self.maximumChanged.emit(len(allEvents) - 1)
 
 		self.statusMsg = 'Deleting all events in calendar...'
