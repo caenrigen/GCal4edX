@@ -21,35 +21,55 @@ To get started with this code:
 * Install all python 3 packages you are missing (see imports at the beggining of the code)
 If you run into trouble you can contact me by creating a new issue. More detailed instructions would be provided if you find this usefull.
 
-## Required packages
-There might be other required packages, but at least the following are essential. You might want to first create a virtual env before installing all the dependencies.
+## Building this app step by step
+1. Clone this repo
 ```bash
-pip install fbs PyQt5
-pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+git clone https://github.com/caenrigen/GCal4edX.git; cd GCal4edX
 ```
 
-## Building this app
-1. After you get started with the Google Calendar API, copy your `credentials.json` file into the project resource dir such that you end up with the following file:
+2. Set up a virtual environment (make sure you are already in the gcal4edx folder, the `cd GCal4edX` above should do that)
+```bash
+python3 -m venv venv
 ```
-src/main/resources/base/credentials.json
+
+3. Activate the environment
+```bash
+source ./venv/bin/activate
 ```
-2. Test if the app run correctly:
+
+4. Install required packages. There might be other required packages, but at least the following are essential.
+```bash
+pip install -r requirements.txt
+```
+
+5. After you get started with the Google Calendar API, copy your `credentials.json` file into the project resource dir such that you end up with the following file, (you need to create the folders)
+```bash
+mkdir ./src/main/resources; mkdir ./src/main/resources/base/
+# ./src/main/resources/base/credentials.json # you should have this file
+```
+
+6. Test if the app runs correctly:
 ```bash
 python build.py run # you can also run 'fbs run'
 ```
 
-3. Freeze the app
+7. Freeze the app
 ```bash
 python build.py build_ui # convert ui files into python code
 python build.py build # modified 'fbs freeze'
 ```
 
-4. After freezing your app you can create an installer with the following
+8. If you are building for macOS, you might want to fix the app bundle to work for dark mode (not tested on latest macOS Catalina):
+```bash
+python build.py fix_dark_mode
+```
+
+9. After freezing your app you can create an installer with the following
 ```bash
 python build.py installer # or just 'fbs installer'
 ```
 
-[Google Calendar Tool]: https://edx.readthedocs.io/projects/open-edx-ca/en/dogwood/exercises_tools/google_calendar.html 
+[Google Calendar Tool]: https://edx.readthedocs.io/projects/open-edx-ca/en/dogwood/exercises_tools/google_calendar.html
 [MOOC Técnico]: https://mooc.tecnico.ulisboa.pt
 [Python Google Calendar API]: https://developers.google.com/calendar/quickstart/python
 [here]: https://fbs.sh/victor/GCal4edX/GCal4edX.dmg
