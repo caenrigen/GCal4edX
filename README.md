@@ -45,7 +45,7 @@ pip install -r requirements.txt
 5. After you get started with the Google Calendar API, copy your `credentials.json` file into the project resource dir such that you end up with the following file, (you need to create the folders)
 ```bash
 mkdir ./src/main/resources; mkdir ./src/main/resources/base/
-# ./src/main/resources/base/credentials.json # you should have this file
+# ./src/main/resources/base/credentials.json # you should end up with this file
 ```
 
 6. Test if the app runs correctly:
