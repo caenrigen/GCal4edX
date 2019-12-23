@@ -14,14 +14,14 @@ from MainWindowUI import *
 from GCalV3 import *
 from Model import *
 
-if __name__ == '__main__':
-	appctxt = ApplicationContext()       # 1. Instantiate ApplicationContext
-	appctxt.app.setStyle('Macintosh')
+if __name__ == "__main__":
+    appctxt = ApplicationContext()  # 1. Instantiate ApplicationContext
+    appctxt.app.setStyle("Macintosh")
 
-	window = MainWindowUI(appctxt)
-	window.show()
+    window = MainWindowUI(appctxt)
+    window.show()
 
-	exit_code = appctxt.app.exec_()      # 2. Invoke appctxt.app.exec_()
-	# clean tmp dir
-	shutil.rmtree(window.model.tmpOutputDir)
-	sys.exit(exit_code)
+    exit_code = appctxt.app.exec_()  # 2. Invoke appctxt.app.exec_()
+    # clean tmp dir
+    shutil.rmtree(window.model.tmpOutputDir)
+    sys.exit(exit_code)

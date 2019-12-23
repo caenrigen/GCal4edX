@@ -59,12 +59,7 @@ python build.py build_ui # convert ui files into python code
 python build.py build # modified 'fbs freeze'
 ```
 
-8. If you are building for macOS, you might want to fix the app bundle to work for dark mode (not tested on latest macOS Catalina):
-```bash
-python build.py fix_dark_mode
-```
-
-9. After freezing your app you can create an installer with the following
+8. After freezing your app you can create an installer with the following
 ```bash
 python build.py installer # or just 'fbs installer'
 ```
